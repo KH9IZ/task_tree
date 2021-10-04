@@ -2,6 +2,8 @@
 """User model for interaction with database"""
 
 # External imports
+import hashlib
+import hmac
 import time
 import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -56,7 +58,9 @@ class User(db.Model):
         :return: Token for session
         :rtype: str
         """
-        return jwt.encode({'id': self.id, 'exp': time.time() + expires_in}, secret_key)
+        t = jwt.encode({'id': self.id, 'exp': time.time() + expires_in}, secret_key)
+        print("Generating auth_token: {}".format(t))
+        return t
 
     @staticmethod
     def verify_auth_token(token, secret_key=Config.SECRET_KEY):
@@ -73,3 +77,20 @@ class User(db.Model):
         except jwt.PyJWTError:
             return
         return User.query.get_or_404(data.get('id'))
+
+    @staticmethod
+    def check_tg_hash(data: dict, secret_key=Config.TG_TOKEN) -> bool:
+        if 'hash' not in data or \
+                'id' not in data or \
+                (('username' not in data) and ('first_name' not in data)):
+            return False
+        data = dict(sorted(data.items(), key=lambda x: x[0]))
+        tg_hash = data.pop('hash')
+        validation_string = "\n".join(f"{i[0]}={i[1]}" for i in data.items()).encode("UTF-8")
+        check_hash = hmac.new(key=secret_key.encode("UTF-8"),
+                              msg=validation_string,
+                              digestmod=hashlib.sha256).hexdigest()
+        return check_hash == tg_hash
+
+    def verify_tg(self, data: dict):
+        return User.check_tg_hash(data) and self.verify_password(str(data.get('id')))
