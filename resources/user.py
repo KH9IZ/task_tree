@@ -42,6 +42,13 @@ class UserAPI(Resource):
         db.session.commit()
         return {'token': new_user.generate_auth_token()}
 
+    @auth.login_required
+    @marshal_with(user_fields)
+    def delete(self):
+        db.session.delete(auth.current_user())
+        db.session.commit()
+        return auth.current_user()
+
 
 @api.resource('/user/get_token', endpoint='token')
 class TokenAPI(Resource):

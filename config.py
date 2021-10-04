@@ -14,7 +14,7 @@ class Config:
     """
     TOKEN_PERIOD: int = 12*31*24*60*60
     SECRET_KEY: str = os.environ.get('SECRET_KEY') or "____CHANGE___THI$___53CЯET_____"
-    TG_TOKEN: str = "1997463923:AAHVhduj12VH3WRqbLtVjZZCEKPvZD2PQZ8"  # TODO: remove
+    TG_TOKEN: str = os.environ.get('TG_TOKEN') or "Insert your telegram token here"
     SQLALCHEMY_DATABASE_URI: str = os.environ.get('SQLALCHEMY_DATABASE_URI') or 'sqlite:///sqlite.db'
 
 

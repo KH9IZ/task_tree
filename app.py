@@ -14,6 +14,7 @@ app.config.from_object(DevelopmentConfig)
 
 db.init_app(app)  # SQLAlchemy initialization
 api.init_app(app)  # Flask_restful initialization
+user.User.init_app(app)  # User initialization, needs for config
 
 
 if __name__ == '__main__':

@@ -16,8 +16,8 @@ class Task(db.Model):
                           comment="Task for which current task is subtask")
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    owner = db.relationship('User', backref=db.backref('tasks', lazy='dynamic'), lazy=True)
-    parent = db.relationship('Task', remote_side=id, lazy=True, backref='subtasks')
+    owner = db.relationship('User', backref=db.backref('tasks', lazy='dynamic', cascade="all,delete"), lazy=True)
+    parent = db.relationship('Task', remote_side=id, lazy=True, backref=db.backref('subtasks', cascade="all,delete"))
 
     def __init__(self, title: str = None, description: str = None, parent=None, owner: User = None, **kwargs):
         """Task model for interaction with database
