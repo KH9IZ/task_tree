@@ -58,6 +58,7 @@ class TokenAPI(Resource):
     def get(self) -> dict[str, str]:  # TODO: add 'expiration_period' field
         args = dict(request.json or {})  # Immutable -> Mutable
         users = User.query.filter_by(username=args.get('username')).all()
+        print(users)
         for u in users:
             if u.verify_tg(args) or u.verify_password(args.get('password', '')):
                 return {'token': u.generate_auth_token()}

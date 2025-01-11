@@ -18,4 +18,7 @@ user.User.init_app(app)  # User initialization, needs for config
 
 
 if __name__ == '__main__':
+    if app.config.get('TG_TOKEN') is None:
+        print("!! No Telegram token provided !!\n"
+              "Telegram authentication is OFF")
     app.run(debug=True)
